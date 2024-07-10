@@ -1,11 +1,21 @@
 package com.oliveira.amauri.planner.trip;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Entity
+@Table(name = "trips")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Trip {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,4 +38,16 @@ public class Trip {
 
     @Column(name = "owner_email", nullable = false)
     private String ownerEmail;
+
+    public Trip(TripCreateRequest tripPayload) {
+        this.destination = tripPayload.destination();
+        this.isConfirmed = false;
+        this.ownerEmail = tripPayload.owner_email();
+        this.ownerName = tripPayload.owner_name();
+        this.startsAt = LocalDateTime.parse(tripPayload.starts_at(), DateTimeFormatter.ISO_DATE_TIME);
+        this.endsAt = LocalDateTime.parse(tripPayload.ends_at(), DateTimeFormatter.ISO_DATE_TIME);
+
+
+
+    }
 }
