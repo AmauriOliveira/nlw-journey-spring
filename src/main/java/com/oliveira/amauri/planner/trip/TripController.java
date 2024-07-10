@@ -22,14 +22,14 @@ public class TripController {
     private TripRepository tripRepository;
 
     @PostMapping
-    public ResponseEntity<TripCreateResponse> createTrip(@RequestBody TripCreateRequest tripPayload) {
+    public ResponseEntity<TripCreateResponseBody> createTrip(@RequestBody TripCreateRequestBody tripPayload) {
         Trip newTrip = new Trip(tripPayload);
 
         this.tripRepository.save(newTrip);
 
         this.participantService.registerParticipantsToEvent(tripPayload.emails_to_invite(), newTrip.getId());
 
-        return ResponseEntity.ok(new TripCreateResponse(newTrip.getId()));
+        return ResponseEntity.ok(new TripCreateResponseBody(newTrip.getId()));
     }
 
     @GetMapping("/{id}")
@@ -41,7 +41,7 @@ public class TripController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Trip> updateTrip(@PathVariable UUID id, @RequestBody TripCreateRequest tripPayload) {
+    public ResponseEntity<Trip> updateTrip(@PathVariable UUID id, @RequestBody TripCreateRequestBody tripPayload) {
         Optional<Trip> trip = this.tripRepository.findById(id);
 
         if (trip.isPresent()) {

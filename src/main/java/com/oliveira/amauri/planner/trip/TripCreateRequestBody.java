@@ -2,7 +2,7 @@ package com.oliveira.amauri.planner.trip;
 
 import java.util.List;
 
-public record TripCreateRequest(
+public record TripCreateRequestBody(
         String destination,
         String starts_at,
         String ends_at,

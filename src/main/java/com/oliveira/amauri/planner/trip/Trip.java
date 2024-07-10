@@ -39,7 +39,7 @@ public class Trip {
     @Column(name = "owner_email", nullable = false)
     private String ownerEmail;
 
-    public Trip(TripCreateRequest tripPayload) {
+    public Trip(TripCreateRequestBody tripPayload) {
         this.destination = tripPayload.destination();
         this.isConfirmed = false;
         this.ownerEmail = tripPayload.owner_email();
