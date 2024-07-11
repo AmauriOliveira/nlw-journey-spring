@@ -2,6 +2,7 @@ package com.oliveira.amauri.planner.trip;
 
 import com.oliveira.amauri.planner.activity.ActivityCreateRequestBody;
 import com.oliveira.amauri.planner.activity.ActivityCreateResponseBody;
+import com.oliveira.amauri.planner.activity.ActivitySearchResponseBody;
 import com.oliveira.amauri.planner.activity.ActivityService;
 import com.oliveira.amauri.planner.participant.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,6 +109,13 @@ public class TripController {
         List<ParticipantFindResponseBody> participantList = this.participantService.getAllParticipantsFromEvent(id);
 
         return ResponseEntity.ok(participantList);
+    }
+
+    @GetMapping("/{id}/activities")
+    public ResponseEntity<List<ActivitySearchResponseBody>> getAllActivities(@PathVariable UUID id) {
+        List<ActivitySearchResponseBody> activityList = this.activityService.getAllActivitiesFromId(id);
+
+        return ResponseEntity.ok(activityList);
     }
 
     @PostMapping("/{id}/activities")
