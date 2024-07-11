@@ -20,7 +20,7 @@ public class ParticipantController {
 
         if (participant.isPresent()) {
             Participant rawParticipant = participant.get();
-            rawParticipant.setConfirmed(true);
+            rawParticipant.setIsConfirmed(true);
             rawParticipant.setName(participantPayload.name());
 
             this.participantRepository.save(rawParticipant);
