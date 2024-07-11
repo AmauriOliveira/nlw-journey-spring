@@ -6,6 +6,7 @@ import com.oliveira.amauri.planner.activity.ActivitySearchResponseBody;
 import com.oliveira.amauri.planner.activity.ActivityService;
 import com.oliveira.amauri.planner.link.LinkCreateRequestBody;
 import com.oliveira.amauri.planner.link.LinkCreateResponseBody;
+import com.oliveira.amauri.planner.link.LinkSearchResponseBody;
 import com.oliveira.amauri.planner.link.LinkService;
 import com.oliveira.amauri.planner.participant.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,6 +118,13 @@ public class TripController {
     }
 
     // links
+
+    @GetMapping("/{id}/links")
+    public ResponseEntity<List<LinkSearchResponseBody>> getAllLinks(@PathVariable UUID id) {
+        List<LinkSearchResponseBody> linkList = this.linkService.getAllLinksFromId(id);
+
+        return ResponseEntity.ok(linkList);
+    }
 
     @PostMapping("/{id}/links")
     public ResponseEntity<LinkCreateResponseBody> createLink(@PathVariable UUID id, @RequestBody LinkCreateRequestBody linkPayload) {
