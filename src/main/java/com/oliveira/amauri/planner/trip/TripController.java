@@ -1,5 +1,8 @@
 package com.oliveira.amauri.planner.trip;
 
+import com.oliveira.amauri.planner.activity.ActivityCreateRequestBody;
+import com.oliveira.amauri.planner.activity.ActivityCreateResponseBody;
+import com.oliveira.amauri.planner.activity.ActivityService;
 import com.oliveira.amauri.planner.participant.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +23,11 @@ public class TripController {
     private ParticipantService participantService;
 
     @Autowired
+    private ActivityService activityService;
+
+    @Autowired
     private TripRepository tripRepository;
+
 
     @PostMapping
     public ResponseEntity<TripCreateResponseBody> createTrip(@RequestBody TripCreateRequestBody tripPayload) {
@@ -102,4 +109,20 @@ public class TripController {
 
         return ResponseEntity.ok(participantList);
     }
+
+    @PostMapping("/{id}/activities")
+    public ResponseEntity<ActivityCreateResponseBody> registerActivity(@PathVariable UUID id, @RequestBody ActivityCreateRequestBody activityPayload) {
+        Optional<Trip> trip = this.tripRepository.findById(id);
+
+        if (trip.isPresent()) {
+            Trip rawTrip = trip.get();
+
+            ActivityCreateResponseBody activityCreateResponseBody = this.activityService.createActivity(activityPayload, rawTrip);
+
+            return ResponseEntity.ok(activityCreateResponseBody);
+        }
+
+        return  ResponseEntity.notFound().build();
+    }
+
 }
