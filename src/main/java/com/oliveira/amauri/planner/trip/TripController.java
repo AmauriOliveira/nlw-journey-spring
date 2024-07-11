@@ -1,5 +1,7 @@
 package com.oliveira.amauri.planner.trip;
 
+import com.oliveira.amauri.planner.participant.ParticipantCreateResponseBody;
+import com.oliveira.amauri.planner.participant.ParticipantRequestBody;
 import com.oliveira.amauri.planner.participant.ParticipantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -71,6 +73,25 @@ public class TripController {
             this.participantService.triggerConfirmationEmailToParticipants(id);
 
             return ResponseEntity.ok(rawTrip);
+        }
+
+        return  ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/{id}/invite")
+    public ResponseEntity<ParticipantCreateResponseBody> inviteParticipant(@PathVariable UUID id, @RequestBody ParticipantRequestBody participantPayload) {
+        Optional<Trip> trip = this.tripRepository.findById(id);
+
+        if (trip.isPresent()) {
+            Trip rawTrip = trip.get();
+
+            ParticipantCreateResponseBody responseBody = this.participantService.registerParticipantToEvent(participantPayload.email(), rawTrip);
+
+            if (rawTrip.getIsConfirmed()) {
+                this.participantService.triggerConfirmationEmailToParticipant(participantPayload.email());
+            }
+
+            return ResponseEntity.ok(responseBody);
         }
 
         return  ResponseEntity.notFound().build();

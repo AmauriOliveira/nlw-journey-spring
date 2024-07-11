@@ -18,7 +18,19 @@ public class ParticipantService {
        this.participantRepository.saveAll(participants);
     }
 
+    public ParticipantCreateResponseBody registerParticipantToEvent(String email, Trip trip) {
+        Participant newParticipant = new Participant(email, trip);
+
+        this.participantRepository.save(newParticipant);
+
+        return new ParticipantCreateResponseBody(newParticipant.getId());
+    }
+
     public void triggerConfirmationEmailToParticipants(UUID tripId) {
+
+    }
+
+    public void triggerConfirmationEmailToParticipant(String email) {
 
     }
 }
