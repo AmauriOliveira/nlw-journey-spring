@@ -4,6 +4,9 @@ import com.oliveira.amauri.planner.activity.ActivityCreateRequestBody;
 import com.oliveira.amauri.planner.activity.ActivityCreateResponseBody;
 import com.oliveira.amauri.planner.activity.ActivitySearchResponseBody;
 import com.oliveira.amauri.planner.activity.ActivityService;
+import com.oliveira.amauri.planner.link.LinkCreateRequestBody;
+import com.oliveira.amauri.planner.link.LinkCreateResponseBody;
+import com.oliveira.amauri.planner.link.LinkService;
 import com.oliveira.amauri.planner.participant.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +24,18 @@ import java.util.UUID;
 public class TripController {
 
     @Autowired
-    private ParticipantService participantService;
+    private TripRepository tripRepository;
 
     @Autowired
     private ActivityService activityService;
 
     @Autowired
-    private TripRepository tripRepository;
+    private LinkService linkService;
 
+    @Autowired
+    private ParticipantService participantService;
+
+    // trips
 
     @PostMapping
     public ResponseEntity<TripCreateResponseBody> createTrip(@RequestBody TripCreateRequestBody tripPayload) {
@@ -85,6 +92,56 @@ public class TripController {
         return  ResponseEntity.notFound().build();
     }
 
+    // activities
+
+    @GetMapping("/{id}/activities")
+    public ResponseEntity<List<ActivitySearchResponseBody>> getAllActivities(@PathVariable UUID id) {
+        List<ActivitySearchResponseBody> activityList = this.activityService.getAllActivitiesFromId(id);
+
+        return ResponseEntity.ok(activityList);
+    }
+
+    @PostMapping("/{id}/activities")
+    public ResponseEntity<ActivityCreateResponseBody> createActivity(@PathVariable UUID id, @RequestBody ActivityCreateRequestBody activityPayload) {
+        Optional<Trip> trip = this.tripRepository.findById(id);
+
+        if (trip.isPresent()) {
+            Trip rawTrip = trip.get();
+
+            ActivityCreateResponseBody activityCreateResponseBody = this.activityService.createActivity(activityPayload, rawTrip);
+
+            return ResponseEntity.ok(activityCreateResponseBody);
+        }
+
+        return  ResponseEntity.notFound().build();
+    }
+
+    // links
+
+    @PostMapping("/{id}/links")
+    public ResponseEntity<LinkCreateResponseBody> createLink(@PathVariable UUID id, @RequestBody LinkCreateRequestBody linkPayload) {
+        Optional<Trip> trip = this.tripRepository.findById(id);
+
+        if (trip.isPresent()) {
+            Trip rawTrip = trip.get();
+
+            LinkCreateResponseBody linkBody = this.linkService.createLink(linkPayload, rawTrip);
+
+            return ResponseEntity.ok(linkBody);
+        }
+
+        return  ResponseEntity.notFound().build();
+    }
+
+    // participants
+
+    @GetMapping("/{id}/participants")
+    public ResponseEntity<List<ParticipantFindResponseBody>> getAllParticipants(@PathVariable UUID id) {
+        List<ParticipantFindResponseBody> participantList = this.participantService.getAllParticipantsFromEvent(id);
+
+        return ResponseEntity.ok(participantList);
+    }
+
     @PostMapping("/{id}/invite")
     public ResponseEntity<ParticipantCreateResponseBody> inviteParticipant(@PathVariable UUID id, @RequestBody ParticipantRequestBody participantPayload) {
         Optional<Trip> trip = this.tripRepository.findById(id);
@@ -99,35 +156,6 @@ public class TripController {
             }
 
             return ResponseEntity.ok(responseBody);
-        }
-
-        return  ResponseEntity.notFound().build();
-    }
-
-    @GetMapping("/{id}/participants")
-    public ResponseEntity<List<ParticipantFindResponseBody>> getAllParticipants(@PathVariable UUID id) {
-        List<ParticipantFindResponseBody> participantList = this.participantService.getAllParticipantsFromEvent(id);
-
-        return ResponseEntity.ok(participantList);
-    }
-
-    @GetMapping("/{id}/activities")
-    public ResponseEntity<List<ActivitySearchResponseBody>> getAllActivities(@PathVariable UUID id) {
-        List<ActivitySearchResponseBody> activityList = this.activityService.getAllActivitiesFromId(id);
-
-        return ResponseEntity.ok(activityList);
-    }
-
-    @PostMapping("/{id}/activities")
-    public ResponseEntity<ActivityCreateResponseBody> registerActivity(@PathVariable UUID id, @RequestBody ActivityCreateRequestBody activityPayload) {
-        Optional<Trip> trip = this.tripRepository.findById(id);
-
-        if (trip.isPresent()) {
-            Trip rawTrip = trip.get();
-
-            ActivityCreateResponseBody activityCreateResponseBody = this.activityService.createActivity(activityPayload, rawTrip);
-
-            return ResponseEntity.ok(activityCreateResponseBody);
         }
 
         return  ResponseEntity.notFound().build();
